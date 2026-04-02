@@ -6,7 +6,7 @@ NAMESPACE = "eventhub-de-training-2026"
 # storage account connection 
 
 STORAGE_ACCOUNT_NAME = "adlsgen2detraining2026"
-STORAGE_ACCOUNT_ACCESS_KEY = "1q5VZds0spSgP67GKIXbywKvPVkoehFryJhxt61HZ+urC3xGc7ha5uPyJPSVbIGxRNPqUrVRmTcl+AStKehc8g=="
+STORAGE_ACCOUNT_ACCESS_KEY = "XNz5mbUfl1EEuLLsot9OVtAcu+lRIf5LmtdS8NrXzoHWFpy8bD/SMoMQaMdQ0w4A+BhVtnhkn4ZB+AStz/PMPw=="
 
 BRONZE_DATA = "retail-bronze"
 SILVER_DATA = "retail-silver"
