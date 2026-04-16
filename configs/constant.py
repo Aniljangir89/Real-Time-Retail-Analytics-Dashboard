@@ -1,4 +1,4 @@
-CONNECTION_STRING = "Endpoint=sb://anils-namespace.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=sgiT0/DSPW1EqF9ucgjmOOxIypH+XnW1F+AEhMFFMIE="
+CONNECTION_STRING = "Endpoint=sb://anils-namespace.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=Puw4wjYwYpdqeHlSTxiRFJA4YqtswRqcl+AEhCf1nU8="
 
 NAMESPACE = "anils-namespace"
 EVENT_HUB = "retail-event"
