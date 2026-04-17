@@ -1,16 +1,13 @@
 
-
 from azure.eventhub import EventHubProducerClient, EventData
 import json
 import time
 from retail_app import generate_event
 
-conn_str = "Endpoint=sb://eventhub-de-training-2026.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=IX2Befhki1ech55ZC1TrnpQ4EbyaB9B6D+AEhIkgnvE="
-eventhub_name = "retail-events"
+conn_str = "Endpoint=sb://anils-namespace.servicebus.windows.net/;SharedAccessKeyName=anils;SharedAccessKey=989fDv37Hl+QhT+eYefLIw2QW1Q/Z85UP+AEhG64fB8=;EntityPath=retail-event"
 
 producer = EventHubProducerClient.from_connection_string(
     conn_str=conn_str,
-    eventhub_name=eventhub_name
 )
 
 while True:
