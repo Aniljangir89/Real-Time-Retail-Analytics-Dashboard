@@ -22,7 +22,7 @@ def Parse_Time(df):
 def Filtering(df):
     df = df \
     .filter(col("user_id").isNotNull()) \
-    .filter(col("event_type").isin("search", "click", "add_to_cart", "checkout", "purchase"))
+    .filter(col("event_type").isin("search", "click", "cart", "checkout", "purchase"))
     return df
 
 # remove duplicate event_ids

@@ -11,3 +11,8 @@ STORAGE_ACCOUNT_ACCESS_KEY = "nS5RFZsA1h7X9xKTQ8hdim/050ophZEH/fYkY9e/uotf6ggiHj
 BRONZE_DATA = "retail-bronze"
 SILVER_DATA = "retail-silver"
 GOLD_DATA ="retail-gold"
+
+# catalog connection 
+
+CATALOG = "retail_catalog"
+SCHEMA = "gold"
