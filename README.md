@@ -19,6 +19,7 @@
     - [Databricks Cluster Libraries](#databricks-cluster-libraries)
   - [Phase-by-Phase Setup Guide](#phase-by-phase-setup-guide)
     - [Phase 1 — Azure Infrastructure \& Event Generator](#phase-1--azure-infrastructure--event-generator)
+  - [](#)
     - [Phase 2 — Bronze Layer: Streaming Ingestion](#phase-2--bronze-layer-streaming-ingestion)
     - [Phase 3 — Silver Layer: Parse \& Clean](#phase-3--silver-layer-parse--clean)
     - [Phase 4 — Gold Layer: Modelling \& KPIs](#phase-4--gold-layer-modelling--kpis)
@@ -39,11 +40,7 @@
 ## Project Overview
 
 This project simulates an Amazon-style e-commerce platform by generating live user behaviour events via a Python application. Events flow through the following layers:
-
-```
-Python Generator → Azure Event Hubs → Spark Structured Streaming (Databricks)
-→ Delta Lake (Bronze → Silver → Gold) → Power BI Live Dashboard
-```
+![alt text](images/image.png)
 
 The pipeline covers every layer of a modern data engineering stack: **ingestion**, **streaming**, **transformation**, **data modelling**, **orchestration**, and **business intelligence** — all running natively on Azure.
 
@@ -51,30 +48,7 @@ The pipeline covers every layer of a modern data engineering stack: **ingestion*
 
 ## Architecture
 
-```
-┌─────────────────────────────────────────────────────────────────────┐
-│  INGEST                                                              │
-│  Python Generator ──JSON──► Azure Event Hubs ──Kafka──► Databricks  │
-│  (retail_app.py)              (retail-events hub)      Spark Stream  │
-└─────────────────────────────────────────────────────────────────────┘
-                                    │ Raw data
-┌─────────────────────────────────────────────────────────────────────┐
-│  STORE — ADLS Gen2 (Delta Lake Medallion Architecture)              │
-│                                                                      │
-│  ┌─────────────┐    ┌─────────────┐    ┌─────────────┐             │
-│  │   BRONZE    │───►│   SILVER    │───►│    GOLD     │             │
-│  │  Raw JSON   │    │ Parsed/Clean│    │ KPI tables  │             │
-│  │  +metadata  │    │ Typed cols  │    │ Star schema │             │
-│  └─────────────┘    └─────────────┘    └─────────────┘             │
-│                                               │                      │
-│                                        Unity Catalog                 │
-└─────────────────────────────────────────────────────────────────────┘
-                                               │ SQL Warehouse / DirectQuery
-┌─────────────────────────────────────────────────────────────────────┐
-│  SERVE — Power BI Dashboard                                          │
-│  Funnel Analysis │ Revenue Trends │ Category Performance │ User Behaviour │
-└─────────────────────────────────────────────────────────────────────┘
-```
+![alt text](<images/Screenshot 2026-04-17 at 5.48.27 PM.png>)
 
 ---
 
@@ -202,15 +176,13 @@ python hub_connection.py
 
 `hub_connection.py` calls `generate_event()` from `retail_app.py` every 2 seconds and sends the JSON payload as an `EventData` batch to Event Hubs. You should see console output like:
 
-```
-✅ SENT: {'event_id': '...', 'event_type': 'search', 'user_id': 412, ...}
-✅ SENT: {'event_id': '...', 'event_type': 'purchase', 'amount': 99.5, ...}
-```
+
 
 **4. Verify in Azure Portal**
 
 Open your Event Hubs Namespace → `retail-event` hub → Metrics. Confirm incoming messages are registering.
 
+![alt text](<images/Screenshot 2026-04-17 at 6.28.25 PM.png>)
 ---
 
 ### Phase 2 — Bronze Layer: Streaming Ingestion
@@ -243,18 +215,11 @@ df_bronze = df.selectExpr("CAST(value AS STRING)", "partition") \
     .withColumn("source", lit("event_hub"))
 ```
 
-The stream is written to the Bronze Delta table with checkpointing for fault tolerance:
 
-```python
-df_bronze.writeStream \
-    .format("delta") \
-    .outputMode("append") \
-    .option("checkpointLocation", "abfss://retail-bronze@<account>.dfs.core.windows.net/checkpoints/kafka_bronze/") \
-    .trigger(availableNow=True) \
-    .start("abfss://retail-bronze@<account>.dfs.core.windows.net/kafka_data/")
-```
 
 > **Design decision:** `trigger(availableNow=True)` processes all available data at startup and stops — suitable for scheduled runs. Switch to `trigger(processingTime='10 seconds')` for always-on streaming.
+
+![alt text](<images/Screenshot 2026-04-17 at 6.33.16 PM.png>)
 
 ---
 
@@ -301,6 +266,7 @@ df_final.writeStream \
     .partitionBy("event_date", "event_type") \
     .start("abfss://retail-silver@<account>.dfs.core.windows.net/clean_data/")
 ```
+![alt text](<images/Screenshot 2026-04-17 at 6.35.08 PM.png>)
 
 ---
 
@@ -354,6 +320,7 @@ fct_events.write.format("delta").mode("append").saveAsTable("retail_catalog.gold
 All 6 KPI tables are then derived from `fct_events` using Spark SQL (see [Gold KPI Tables](#gold-kpi-tables) below).
 
 **Schedule:** Run `gold/Star.ipynb` as a Databricks Workflow job every 15 minutes for near-real-time Gold refresh.
+
 
 ---
 
