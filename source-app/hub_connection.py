@@ -1,15 +1,19 @@
-
 from azure.eventhub import EventHubProducerClient, EventData
+from azure.identity import DefaultAzureCredential
 import json
 import time
 from retail_app import generate_event
 
-conn_str = "Endpoint=sb://anils-namespace.servicebus.windows.net/;SharedAccessKeyName=anils;SharedAccessKey=989fDv37Hl+QhT+eYefLIw2QW1Q/Z85UP+AEhG64fB8=;EntityPath=retail-event"
+fully_qualified_namespace = "anils-namespace.servicebus.windows.net"
+eventhub_name = "retail-event"
 
-producer = EventHubProducerClient.from_connection_string(
-    conn_str=conn_str,
+credential = DefaultAzureCredential()
+
+producer = EventHubProducerClient(
+    fully_qualified_namespace=fully_qualified_namespace,
+    eventhub_name=eventhub_name,
+    credential=credential
 )
-
 while True:
     event = generate_event()
     
